@@ -10,7 +10,7 @@
   "dependencies": {
     "chart.js": "4.5.1",
     "dompurify": "3.4.16",
-    "jsdom": "24.1.3",
+    "jsdom": "30.1.1",
     "katex": "0.16.47",
     "mermaid": "11.17.2",
     "vega": "5.33.1",
