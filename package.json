@@ -18,7 +18,7 @@
     "vega-lite": "5.23.0"
   },
   "devDependencies": {
-    "eslint": "9.39.5",
+    "eslint": "10.11.0",
     "globals": "16.4.0"
   }
 }
