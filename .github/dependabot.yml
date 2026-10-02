@@ -1,17 +1,52 @@
+# Dependency updates. Minor and patch updates arrive grouped, one pull request
+# per ecosystem and group, and CI checks each. Major updates of the packages
+# below are ignored: they change rendering or need a newer Node.js than the
+# image has, so they are done deliberately, together, in a release of their own.
 version: 2
 updates:
-  - package-ecosystem: pip
-    directory: /
-    schedule:
-      interval: monthly
   - package-ecosystem: npm
     directory: /
     schedule:
       interval: monthly
+    groups:
+      # Embedded into every unit; they depend on each other (vega-lite and
+      # vega-embed require a matching vega), so they move together.
+      renderers:
+        patterns: ["chart.js", "mermaid", "vega", "vega-lite", "vega-embed", "vega-*"]
+      build-probes:
+        patterns: ["katex", "jsdom", "dompurify"]
+      dev-tools:
+        dependency-type: development
+    ignore:
+      # jsdom 25 and later need Node.js 22; the image has Node.js 20
+      # (Debian trixie). Lifting this needs a newer base image first.
+      - dependency-name: "jsdom"
+        versions: [">=25"]
+      - dependency-name: "vega*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "mermaid"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "chart.js"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      python:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
   - package-ecosystem: docker
     directory: /
     schedule:
       interval: monthly
+    ignore:
+      # Tested on Python 3.12; a newer Python is a deliberate change of its own.
+      - dependency-name: "python"
+        versions: [">=3.13"]
+
   - package-ecosystem: github-actions
     directory: /
     schedule:

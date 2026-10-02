@@ -1,5 +1,10 @@
 // Writes THIRD_PARTY_NOTICES.md from the installed production packages.
 //
+// The file lists packages and licenses, not versions. It changes only when a
+// package is added or removed or a license changes, which is when a person
+// should look at it; a version bump leaves it as it is, so CI can check that
+// it is up to date without failing every dependency update.
+//
 // Lists the libraries embedded into generated units (assets/vendor.json),
 // the packages they bundle (their own runtime dependencies, recursively),
 // and the build-time tools. Run after `npm ci` and whenever package-lock.json
@@ -50,16 +55,16 @@ rows.push("# Third-party notices", "",
   "runtime dependencies, recursively. That is an upper bound: some of them",
   "are used only by the library's command-line tools and are not part of the",
   "browser bundle.", "",
-  "| Library | Version | License | Bundles |", "|---|---|---|---|");
+  "| Library | License | Bundles |", "|---|---|---|");
 for (const name of embedded) {
   const p = pkg(name);
   const bundled = closure(name).map(d => `${d.name} (${license(d)})`).join(", ") || "—";
-  rows.push(`| ${name} | ${p.version} | ${license(p)} | ${bundled} |`);
+  rows.push(`| ${name} | ${license(p)} | ${bundled} |`);
 }
 rows.push("", "## Used at build time only", "",
   "Run by the Node probes while a unit is generated; nothing of them is in a unit.", "",
-  "| Package | Version | License |", "|---|---|---|");
-for (const name of buildOnly) { const p = pkg(name); rows.push(`| ${name} | ${p.version} | ${license(p)} |`); }
+  "| Package | License |", "|---|---|");
+for (const name of buildOnly) { const p = pkg(name); rows.push(`| ${name} | ${license(p)} |`); }
 rows.push("", "## Python packages", "",
   "Installed from `requirements.txt`; licenses as published on PyPI:", "",
   "| Package | License |", "|---|---|",

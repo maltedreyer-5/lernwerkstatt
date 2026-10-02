@@ -85,9 +85,34 @@ node scripts/third_party_notices.mjs  # regenerate THIRD_PARTY_NOTICES.md
 
 The lint applies only rules that catch errors (undefined and shadowed
 names, duplicate keys, unreachable code), because the shell's script runs
-inside every generated unit, where a mistake breaks silently. Regenerate the
-notices after any change to `package-lock.json`; CI fails if the file is out
-of date.
+inside every generated unit, where a mistake breaks silently.
+
+The notices list packages and licenses, not versions, so a version update
+leaves the file unchanged. CI fails only when a bundled package is added or
+removed or a license changes. Then look at the new entries, regenerate the
+file and commit it.
+
+## Dependency updates
+
+Dependabot (`.github/dependabot.yml`) opens grouped pull requests once a
+month: the renderer libraries together, the build-time probe packages
+together, the development tools, the Python packages, the base image and the
+GitHub Actions. CI checks each; merge only when it is green.
+
+Some updates are ignored on purpose, because they cannot be taken over
+automatically:
+
+- **jsdom 25 and later** need Node.js 22. The image is based on Debian trixie,
+  which provides Node.js 20, and the Mermaid probe needs jsdom at build time.
+- **Major versions of Vega, Vega-Lite, Vega-Embed, Mermaid and Chart.js**
+  change how charts and diagrams render, and the Vega packages require
+  matching versions of each other. Upgrade them together and check rendered
+  units, in a release of their own.
+- **Python 3.13 and later** as base image: the project is tested on 3.12.
+
+To lift one of these, change the configuration, upgrade by hand
+(`npm install --save-exact …`), run the whole test suite including the browser
+tests, and look at a few generated units.
 
 ## Measuring with real models
 
