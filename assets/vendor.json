@@ -1,0 +1,20 @@
+{
+  "_comment": "Single source for the renderer libraries embedded into every generated unit. Versions come from package.json/package-lock.json; scripts/copy_vendor.mjs copies the files from node_modules and prepends the license text. src/unit/assembler.py reads the same list. The CDN URLs are only used when a file is missing, and then pin the same version.",
+  "chartjs": [
+    {"file": "chart.umd.min.js", "package": "chart.js", "path": "dist/chart.umd.min.js",
+     "license_file": "chart.js/LICENSE.md"}
+  ],
+  "vegalite": [
+    {"file": "vega.min.js", "package": "vega", "path": "build/vega.min.js",
+     "license_file": "vega-canvas/LICENSE",
+     "_license_note": "The vega package ships no LICENSE file; vega.min.js bundles vega-canvas and the other vega-* modules, which carry the identical BSD-3-Clause notice of the same copyright holder."},
+    {"file": "vega-lite.min.js", "package": "vega-lite", "path": "build/vega-lite.min.js",
+     "license_file": "vega-lite/LICENSE"},
+    {"file": "vega-embed.min.js", "package": "vega-embed", "path": "build/vega-embed.min.js",
+     "license_file": "vega-embed/LICENSE"}
+  ],
+  "mermaid": [
+    {"file": "mermaid.min.js", "package": "mermaid", "path": "dist/mermaid.min.js",
+     "license_file": "mermaid/LICENSE"}
+  ]
+}

@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="__LANGUAGE__">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>__TITLE__</title>
+<style>
+  :root{
+    --paper:#F6F7F9; --card:#FFFFFF; --ink:#1D2A38; --ink-2:#4A5A6A;
+    --accent:#16436B; --accent-light:#E9F0F7; --rule:#D8DEE6;
+    --ok:#2E7D4F; --ok-hell:#E8F3EC; --bad:#A8442E; --bad-light:#F8ECE8;
+    --key:#9A6A00; --key-light:#FBF3DF;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --mono:ui-monospace,"Cascadia Code",Consolas,Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto} *{transition:none!important;animation:none!important}}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:1.0rem;line-height:1.65}
+  a{color:var(--accent)}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px}
+  button{font:inherit;cursor:pointer}
+  mark{background:#FFE9A8;padding:0 .1em;border-radius:2px}
+
+  .app{display:grid;grid-template-columns:290px 1fr;min-height:100vh}
+  /* ── Sidebar: the learning path ── */
+  nav.path{background:var(--card);border-right:1px solid var(--rule);padding:1.5rem 1.25rem;position:sticky;top:0;height:100vh;overflow-y:auto}
+  .path h1{font-family:var(--serif);font-size:1.15rem;line-height:1.35;margin:0 0 .35rem;color:var(--accent)}
+  .path .meta{font-size:.8rem;color:var(--ink-2);margin:0 0 1rem}
+  .path ol{list-style:none;margin:0;padding:0;position:relative}
+  .path ol::before{content:"";position:absolute;left:11px;top:14px;bottom:14px;width:2px;background:var(--rule)}
+  .path li{position:relative;margin:0}
+  .path li.module{position:relative;z-index:1;background:var(--card);font-size:.72rem;font-weight:700;
+    letter-spacing:.07em;text-transform:uppercase;color:var(--ink-2);padding:1rem 0 .25rem}
+  .path a.stage{display:flex;gap:.75rem;align-items:baseline;padding:.5rem .5rem .5rem 0;text-decoration:none;color:var(--ink);border-radius:6px}
+  .path a.stage:hover{background:var(--accent-light)}
+  .path a.stage[aria-current="page"]{background:var(--accent-light);font-weight:600}
+  .tick{flex:0 0 24px;height:24px;border-radius:50%;border:2px solid var(--rule);background:var(--card);
+        display:inline-grid;place-items:center;font-size:.72rem;color:var(--ink-2);position:relative;z-index:1}
+  li.visited .tick{border-color:var(--accent);color:var(--accent)}
+  li.done .tick{border-color:var(--ok);background:var(--ok);color:#fff}
+  .path .title{font-size:.92rem;line-height:1.35}
+  .path-foot{margin-top:1.6rem;padding-top:1rem;border-top:1px solid var(--rule);font-size:.78rem;color:var(--ink-2)}
+  .path-foot button{background:none;border:none;color:var(--ink-2);text-decoration:underline;padding:0;font-size:.78rem}
+  #navToggle{display:none;position:fixed;top:.7rem;left:.7rem;z-index:30;background:var(--card);border:1px solid var(--rule);border-radius:8px;padding:.45rem .7rem}
+
+  /* ── Suche ── */
+  .search{margin:0 0 1.2rem}
+  .search input{width:100%;padding:.5rem .7rem;border:1px solid var(--rule);border-radius:8px;font:inherit;font-size:.88rem;background:var(--paper)}
+  .search-results{list-style:none;margin:.4rem 0 0;padding:0;border:1px solid var(--rule);border-radius:8px;background:var(--card);max-height:45vh;overflow-y:auto}
+  .search-results[hidden]{display:none}
+  .search-results li{border-bottom:1px solid var(--rule)}
+  .search-results li:last-child{border-bottom:none}
+  .search-results a{display:block;padding:.5rem .7rem;text-decoration:none;color:var(--ink);font-size:.84rem;line-height:1.45}
+  .search-results a:hover{background:var(--accent-light)}
+  .search-results .where{display:block;font-weight:600;font-size:.78rem;color:var(--accent)}
+  .search-empty{padding:.5rem .7rem;font-size:.84rem;color:var(--ink-2)}
+
+  /* ── Content ── */
+  /* `max-width` without `margin:auto` only limits the width, it does not
+       centre — on wide screens everything on the right would stay empty. */
+  main{padding:3rem clamp(1.25rem,5vw,4rem);max-width:64rem;margin-inline:auto;
+       width:100%;box-sizing:border-box}
+  .eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);margin:0 0 .4rem}
+  main h2{font-family:var(--serif);font-size:2rem;line-height:1.2;margin:.1rem 0 1.2rem}
+  main h3{font-family:var(--serif);font-size:1.3rem;margin:2rem 0 .6rem;scroll-margin-top:1.2rem}
+  main h4{font-size:1.02rem;margin:1.5rem 0 .4rem;scroll-margin-top:1.2rem}
+  .lede{font-size:1.1rem;color:var(--ink-2)}
+  .block{margin:1.4rem 0}
+  figure{margin:1.4rem 0}
+  figcaption{font-size:.85rem;color:var(--ink-2);margin-top:.5rem}
+  /* Term marking: subtle — dotted underline, no colour. */
+  .term{border-bottom:1px dotted var(--ink-2);cursor:help;outline:none}
+  .term:hover,.term:focus{background:var(--accent-faint,rgba(0,0,0,.05))}
+  .term:focus{outline:2px solid var(--accent,currentColor);outline-offset:1px}
+  #term-popover{position:absolute;z-index:60;max-width:24rem;padding:.7rem .9rem;
+    background:var(--card);border:1px solid var(--rule);border-radius:8px;
+    box-shadow:0 6px 24px rgba(0,0,0,.14);font-size:.9rem;line-height:1.45;display:none}
+  #term-popover[data-open="1"]{display:block}
+  #term-popover b{display:block;margin-bottom:.25rem;font-family:var(--serif)}
+  #term-popover a{font-size:.82rem}
+  @media print{.term{border-bottom:none}#term-popover{display:none!important}}
+  /* Formulas: sub/sup notation and MathML share the display. */
+  .formula,.formula-inline{white-space:nowrap}
+  .formula sub,.formula sup{font-size:.72em;line-height:0}
+  .formula-block .formula-stage{text-align:center;padding:.6rem 0;overflow-x:auto}
+  .formula-block math{font-size:1.15em}
+  .formula-raw{color:var(--ink-2);font-size:.9em}
+  /* Vega-Lite renders bound sliders and select fields in .vega-bindings.
+       Without these rules they stand unstyled below the graphic. */
+  .chart-wrap .vega-bindings{display:flex;flex-wrap:wrap;gap:.5rem 1.2rem;
+    margin-top:.7rem;padding-top:.7rem;border-top:1px solid var(--rule);
+    font-size:.88rem;align-items:center}
+  .chart-wrap .vega-bind{display:flex;align-items:center;gap:.4rem}
+  .chart-wrap .vega-bind label{color:var(--ink-2)}
+  .chart-wrap .vega-bind input[type=range]{max-width:11rem}
+  .chart-wrap input,.chart-wrap select{font:inherit;font-size:.88rem;
+    padding:.15rem .3rem;border:1px solid var(--rule);border-radius:4px;
+    background:var(--card);color:var(--ink)}
+  .chart-interactive figcaption::before{content:"Interaktiv · ";color:var(--ink-2)}
+  @media print{.chart-wrap .vega-bindings{display:none}}
+  .anchor-target{background:var(--key-light);border-radius:4px}
+
+  .note{border-left:4px solid;border-radius:0 8px 8px 0;padding:.85rem 1.1rem;font-size:.95rem}
+  .note .h-label{display:block;font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:.2rem}
+  .note.key_point{background:var(--key-light);border-color:var(--key)}
+  .note.info{background:var(--accent-light);border-color:var(--accent)}
+  .note.warning{background:var(--bad-light);border-color:var(--bad)}
+
+  table{border-collapse:collapse;width:100%;font-size:.94rem}
+  caption{text-align:left;font-size:.85rem;color:var(--ink-2);margin-bottom:.4rem}
+  th,td{border:1px solid var(--rule);padding:.5rem .7rem;text-align:left;vertical-align:top}
+  th{background:var(--accent-light)}
+
+  details{border:1px solid var(--rule);border-radius:8px;background:var(--card);margin:.5rem 0}
+  summary{padding:.7rem 1rem;cursor:pointer;font-weight:600}
+  details>div{padding:0 1rem .8rem}
+
+  pre{background:#20303F;color:#EAF0F5;padding:1rem 1.2rem;border-radius:8px;overflow-x:auto;font-size:.88rem}
+  pre code{font-family:var(--mono)}
+  code{font-family:var(--mono);font-size:.9em;background:var(--accent-light);padding:.08em .35em;border-radius:4px}
+  pre code{background:none;padding:0}
+
+  .exercise{background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:1.2rem 1.4rem}
+  .exercise legend,.exercise .u-title{font-weight:700;font-size:.95rem;padding:0 .3rem}
+  .exercise fieldset{border:none;margin:0 0 1rem;padding:0}
+  .opt{display:flex;gap:.6rem;align-items:flex-start;padding:.35rem .4rem;border-radius:6px}
+  .opt input{margin-top:.3rem;accent-color:var(--accent)}
+  .feedback{margin:.15rem 0 .4rem 2rem;font-size:.88rem;padding:.4rem .7rem;border-radius:6px;display:none}
+  .feedback.show{display:block}
+  .feedback.correct{background:var(--ok-hell);color:var(--ok)}
+  .feedback.wrong{background:var(--bad-light);color:var(--bad)}
+  .btn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:.55rem 1.1rem;font-weight:600}
+  .btn.secondary{background:var(--card);color:var(--accent);border:1px solid var(--accent)}
+  .result{margin-top:.8rem;font-weight:600}
+  .result.ok{color:var(--ok)} .result.partial{color:var(--key)}
+
+  input.gap{border:none;border-bottom:2px solid var(--accent);background:var(--accent-light);
+    padding:.1rem .4rem;font:inherit;width:7ch;text-align:center;border-radius:4px 4px 0 0}
+  input.gap.correct{border-color:var(--ok);background:var(--ok-hell)}
+  input.gap.wrong{border-color:var(--bad);background:var(--bad-light)}
+  input.gap.revealed{border-bottom-style:dashed;border-color:var(--accent);background:transparent;font-style:italic}
+  .match-row{display:flex;gap:1rem;align-items:center;padding:.4rem 0;flex-wrap:wrap}
+  .match-row select{font:inherit;padding:.35rem .5rem;border:1px solid var(--rule);border-radius:6px;background:var(--card)}
+  .match-row.correct select{border-color:var(--ok);background:var(--ok-hell)}
+  .match-row.wrong select{border-color:var(--bad);background:var(--bad-light)}
+
+  .card3d{background:var(--card);border:1px solid var(--rule);border-radius:12px;min-height:9rem;
+    display:grid;place-items:center;padding:1.5rem;text-align:center;font-size:1.05rem;width:100%}
+  .card3d .page-label{display:block;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);margin-bottom:.4rem}
+  .fc-bar{display:flex;gap:.6rem;align-items:center;margin-top:.7rem}
+  .fc-counter{font-size:.85rem;color:var(--ink-2);margin-left:auto}
+
+  .sim{background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:1.2rem 1.4rem}
+  .sim-param{display:grid;grid-template-columns:11rem 1fr 6.5rem;gap:.8rem;align-items:center;margin:.45rem 0;font-size:.92rem}
+  .sim-param input[type=range]{width:100%;accent-color:var(--accent)}
+  .sim-value{font-family:var(--mono);font-size:.85rem;text-align:right;color:var(--accent);font-weight:700}
+  .sim-error{color:var(--bad);font-size:.9rem}
+
+  iframe.widget{width:100%;border:1px solid var(--rule);border-radius:10px;background:#fff}
+  .chart-wrap{position:relative;background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:1rem}
+  .mermaid-wrap{background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:1rem;overflow-x:auto}
+
+  dl.glossary dt{font-weight:700;margin-top:1.2rem;font-family:var(--serif);font-size:1.08rem;scroll-margin-top:1.2rem}
+  dl.glossary dd{margin:.15rem 0 0}
+  .glossary-link{font-size:.82rem;white-space:nowrap}
+  input.glossary-filter{max-width:22rem;width:100%;padding:.5rem .7rem;border:1px solid var(--rule);border-radius:8px;font:inherit;background:var(--card)}
+
+  .task{background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:1.2rem 1.4rem}
+  .task .a-label{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:var(--accent);border-radius:4px;padding:.15rem .5rem;margin-bottom:.6rem}
+  .task textarea{width:100%;min-height:7rem;font:inherit;font-size:.95rem;border:1px solid var(--rule);border-radius:8px;padding:.7rem;background:var(--paper);resize:vertical}
+  .task .solution{display:none;border-top:1px dashed var(--rule);margin-top:1rem;padding-top:1rem}
+  .task .solution.show{display:block}
+  .task .material pre{margin:.4rem 0 1rem}
+  .page-nav{display:flex;justify-content:space-between;gap:1rem;margin-top:3rem;padding-top:1.4rem;border-top:1px solid var(--rule)}
+  .startmeta{display:flex;gap:2.2rem;flex-wrap:wrap;margin:1.4rem 0;font-size:.92rem}
+  .startmeta div b{display:block;font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2)}
+  footer.provenance{margin-top:3.5rem;font-size:.75rem;color:var(--ink-2);border-top:1px solid var(--rule);padding-top:.8rem}
+  .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+  @media (max-width:900px){
+    .app{grid-template-columns:1fr}
+    nav.path{position:fixed;z-index:20;width:min(320px,85vw);height:100vh;transform:translateX(-102%);transition:transform .2s;box-shadow:4px 0 24px rgba(0,0,0,.12)}
+    nav.path.open{transform:none}
+    #navToggle{display:block}
+    main{padding-top:4rem}
+  }
+  @media print{nav.path,#navToggle,.page-nav,.btn{display:none}}
+</style>
+</head>
+<body>
+<button id="navToggle" aria-expanded="false" aria-controls="path">☰</button>
+<div class="app">
+  <nav class="path" id="path"></nav>
+  <main id="content" tabindex="-1"></main>
+</div>
+<div class="sr-only" role="status" aria-live="polite" id="live"></div>
+
+<!--VENDOR:SCRIPTS-->
+<script>
+"use strict";
+__I18N__
+const UNIT = __UNIT_DATA__;
+(function(){
+  /* ── State ─────────────────────────────────────────────── */
+  const KEY = "lw:" + UNIT.id;
+  function loadProgress(){ try{ const s = JSON.parse(localStorage.getItem(KEY)) || {}; return {visited:s.visited||{}, quiz:s.quiz||{}, answers:s.answers||{}}; }catch(e){ return {visited:{},quiz:{},answers:{}}; } }
+  function save(s){ try{ localStorage.setItem(KEY, JSON.stringify(s)); }catch(e){} }
+  let progress = loadProgress();
+
+  const $ = (sel,el)=> (el||document).querySelector(sel);
+  const esc = t => String(t==null?"":t).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const live = msg => { $("#live").textContent = msg; };
+  const hatChart = () => typeof window.Chart === "function";
+  let uid = 0; const nid = p => p + (++uid);
+  const slug = t => String(t).toLowerCase()
+    .replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss")
+    .replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"") || "abschnitt";
+
+  /* ── Seitenmodell ────────────────────────────────────────── */
+  const pages = [{kind:"start", id:"start", title:T.overview}]
+    .concat(UNIT.lessons.map(l=>({kind:"lesson", id:l.id, title:l.title, lesson:l})));
+  if (Array.isArray(UNIT.modules)){
+    UNIT.modules.forEach((m, mi)=>{
+      if (!Array.isArray(m.exercises) || !m.exercises.length) return;
+      const lastOne = (m.lessons||[]).map(id=>pages.findIndex(x=>x.id===id)).filter(i=>i>=0).pop();
+      const page = {kind:"exercises", id:"ex-m"+(mi+1), title:T.exercises_module+(mi+1), module:m};
+      if (lastOne !== undefined) pages.splice(lastOne+1, 0, page); else pages.push(page);
+    });
+  }
+  if (UNIT.final_test) pages.push({kind:"test", id:"test", title: UNIT.final_test.title || T.final_test});
+  /* Hover explanation of glossary terms. The definition is looked up in
+       UNIT.glossary, not duplicated in the markup. Usable by mouse, keyboard
+       (focus) and touch (tap) — hover alone would exclude too many users. */
+  const TERM_INDEX = {};
+  for (const g of (UNIT.glossary||[])) TERM_INDEX[slug(g.term)] = g;
+  let popover = null;
+  function showTerm(el){
+    const g = TERM_INDEX[el.dataset.term]; if(!g) return;
+    if(!popover){
+      popover = document.createElement("div");
+      popover.id = "term-popover";
+      popover.setAttribute("role","tooltip");
+      popover.addEventListener("mouseenter", keepPopover);
+      popover.addEventListener("mouseleave", () => hideTerm(true));
+      document.body.appendChild(popover);
+    }
+    popover.innerHTML = `<b>${esc(g.term)}</b>${esc(g.short || g.definition || "")}
+      <div><a href="#glossary">${T.in_glossary}</a></div>`;
+    const r = el.getBoundingClientRect();
+    popover.dataset.open = "1";
+    popover.style.left = Math.min(r.left + window.scrollX,
+      window.scrollX + document.documentElement.clientWidth - popover.offsetWidth - 12) + "px";
+    popover.style.top = (r.bottom + window.scrollY + 6) + "px";
+  }
+  /* Delayed closing: without a grace period the popover would vanish as soon
+       as the pointer leaves the term — the link into the glossary would then be
+       unreachable. If the pointer moves into the popover, it stays open. */
+  let closeTimer = null;
+  function keepPopover(){ if(closeTimer){ clearTimeout(closeTimer); closeTimer = null; } }
+  function hideTerm(immediately){
+    keepPopover();
+    if(!popover) return;
+    if(immediately){ popover.dataset.open = "0"; return; }
+    closeTimer = setTimeout(() => { popover.dataset.open = "0"; }, 400);
+  }
+  document.addEventListener("mouseover", e => {
+    const el = e.target.closest?.(".term");
+    if(el){ keepPopover(); showTerm(el); }
+    else if(e.target.closest?.("#term-popover")) keepPopover();
+  });
+  document.addEventListener("mouseout", e => {
+    if(e.target.closest?.(".term") || e.target.closest?.("#term-popover")){
+      hideTerm();
+    }
+  });
+  document.addEventListener("focusin", e => {
+    const el = e.target.closest?.(".term"); if(el) showTerm(el);
+  });
+  document.addEventListener("focusout", () => hideTerm());
+  document.addEventListener("click", e => {
+    const el = e.target.closest?.(".term");
+    if(el){ e.preventDefault(); keepPopover(); showTerm(el); }
+    else if(!e.target.closest?.("#term-popover")) hideTerm(true);
+  });
+  document.addEventListener("keydown", e => { if(e.key === "Escape") hideTerm(true); });
+
+  const hasGlossary = Array.isArray(UNIT.glossary) && UNIT.glossary.length > 0;
+  if (hasGlossary) pages.push({kind:"glossary", id:"glossary", title:T.glossary});
+
+  function targetFromHash(){
+    const raw = location.hash.replace(/^#\/?/, "");
+    const parts = raw.split("/");
+    return {
+      page: pages.find(s=>s.id===parts[0]) || pages[0],
+      anchorId: parts[1] || null,
+    };
+  }
+  const moduleOf = lessonId =>
+    (UNIT.modules||[]).find(m => (m.lessons||[]).includes(lessonId)) || null;
+
+  /* ── Learning path (sidebar) ─────────────────────────────── */
+  function initPathHeader(){
+    $("#path").innerHTML = `
+      <h1>${esc(UNIT.title)}</h1>
+      <p class="meta">${esc(UNIT.duration_minutes? "ca. "+UNIT.duration_minutes+" Minuten" : "")}</p>
+      <div class="search" role="search">
+        <input type="search" id="searchField" placeholder="${T.search_placeholder}" aria-label="${T.search_label}" autocomplete="off">
+        <ul class="search-results" id="searchResults" hidden></ul>
+      </div>
+      <div id="pathList"></div>`;
+    initSearch();
+  }
+
+  function paintPath(currentId){
+    const lessonPages = pages.filter(s=>s.kind==="lesson");
+    const numberOf = id => lessonPages.findIndex(s=>s.id===id)+1;
+
+    function liFor(s){
+      const visited = progress.visited[s.id];
+      const done  = (s.kind==="lesson" && quizDone(s.lesson)) || (s.kind==="test" && progress.quiz["test"]);
+      const tick = s.kind==="start" ? "◈" : s.kind==="test" ? "★" : s.kind==="glossary" ? "≡"
+                 : s.kind==="exercises" ? "✎" : (done ? "✓" : numberOf(s.id));
+      return `<li class="${visited?"visited":""} ${done?"done":""}">
+        <a class="stage" href="#${s.id}" ${s.id===currentId?'aria-current="page"':''}>
+          <span class="tick" aria-hidden="true">${tick}</span>
+          <span class="title">${esc(s.title)}</span></a></li>`;
+    }
+
+    let li;
+    if (Array.isArray(UNIT.modules) && UNIT.modules.length){
+      const inModule = new Set(UNIT.modules.flatMap(m=>m.lessons||[]));
+      li = liFor(pages[0]);
+      UNIT.modules.forEach((m, mi)=>{
+        const own_ones = (m.lessons||[]).map(id=>pages.find(s=>s.id===id)).filter(Boolean);
+        if (!own_ones.length) return;
+        li += `<li class="module">${esc(m.title)}</li>` + own_ones.map(liFor).join("");
+        const exr = pages.find(s=>s.kind==="exercises" && s.id==="ex-m"+(mi+1));
+        if (exr) li += liFor(exr);
+      });
+      const without = lessonPages.filter(s=>!inModule.has(s.id));
+      if (without.length) li += `<li class="module">${T.more_lessons}</li>` + without.map(liFor).join("");
+      li += pages.filter(s=>s.kind==="test"||s.kind==="glossary").map(liFor).join("");
+    } else {
+      li = pages.map(liFor).join("");
+    }
+
+    $("#pathList").innerHTML = `<ol>${li}</ol>
+      <div class="path-foot">${T.saved_locally}
+        <button type="button" id="reset">${T.reset_progress}</button></div>`;
+    $("#reset").addEventListener("click", ()=>{ progress={visited:{},quiz:{},answers:{}}; save(progress); render(); });
+    $("#pathList").querySelectorAll("a").forEach(a=>a.addEventListener("click", closeNav));
+  }
+  function quizDone(lesson){
+    return (lesson.blocks||[]).some((b,ix)=> b.type==="quiz" && progress.quiz[lesson.id+":"+ix]);
+  }
+
+  /* ── Volltextsuche ───────────────────────────────────────── */
+  let searchIndex = null;
+  function textOf(html){
+    return new DOMParser().parseFromString("<div>"+String(html||"")+"</div>","text/html")
+      .body.textContent.replace(/\s+/g," ").trim();
+  }
+  function buildIndex(){
+    const entries = [];
+    for (const l of UNIT.lessons){
+      let anchorId = null, where = l.title, buffer = [l.title, ...(l.learning_objectives||[])];
+      const flush = ()=>{
+        const t = buffer.join(" ").replace(/\s+/g," ").trim();
+        if (t) entries.push({page:l.id, anchorId, where, text:t});
+        buffer = [];
+      };
+      for (const b of (l.blocks||[])){
+        if (b.type==="text" || b.type==="note"){
+          const root = new DOMParser().parseFromString("<div>"+b.html+"</div>","text/html").body.firstChild;
+          for (const n of root.childNodes){
+            if (n.nodeType===1 && /^H[34]$/.test(n.tagName)){
+              flush(); anchorId = slug(n.textContent); where = n.textContent.trim();
+              buffer.push(n.textContent);
+            } else buffer.push(n.textContent||"");
+          }
+        }
+        else if (b.type==="table") buffer.push([b.caption||"", ...(b.header||[]), ...(b.rows||[]).flat()].join(" "));
+        else if (b.type==="quiz") (b.questions||[]).forEach(f=>{ buffer.push(f.question); (f.options||[]).forEach(o=>buffer.push(o.text+" "+(o.feedback||""))); });
+        else if (b.type==="flashcards") (b.cards||[]).forEach(k=>buffer.push(k.front+" "+k.back));
+        else if (b.type==="accordion") (b.items||[]).forEach(e=>buffer.push(e.title+" "+textOf(e.html)));
+        else if (b.type==="code") buffer.push(b.content||"");
+        /* Formulas: the description is the searchable statement, not the
+                   markup — MathML nodes give only character salad in the index. */
+        else if (b.type==="formula") buffer.push(b.description||"");
+        else if (b.type==="cloze") buffer.push(textOf((b.html||"").replace(/\{\{\w+\}\}/g," … ")));
+        else if (b.description) buffer.push((b.title||"")+" "+b.description+" "+textOf(b.explanation||""));
+      }
+      flush();
+    }
+    (UNIT.modules||[]).forEach((m, mi)=>{
+      const t = (m.exercises||[]).map(b=>[b.title||"", textOf(b.question||b.task||""), textOf(b.material||""), textOf(b.sample_solution||b.resolution||"")].join(" ")).join(" ").replace(/\s+/g," ").trim();
+      if (t) entries.push({page:"ex-m"+(mi+1), anchorId:null, where:T.exercises_module+(mi+1), text:t});
+    });
+    for (const g of (UNIT.glossary||[])){
+      entries.push({page:"glossary", anchorId:"g-"+slug(g.term),
+        where:T.glossary+": "+g.term, text: g.term+" — "+textOf(g.definition)});
+    }
+    return entries;
+  }
+  function initSearch(){
+    const field = $("#searchField"), res = $("#searchResults");
+    field.addEventListener("input", ()=>{
+      const q = field.value.trim();
+      if (q.length < 2){ res.hidden = true; res.innerHTML=""; return; }
+      searchIndex = searchIndex || buildIndex();
+      const ql = q.toLowerCase(), hits = [];
+      for (const e of searchIndex){
+        const pos = e.text.toLowerCase().indexOf(ql);
+        if (pos >= 0){ hits.push({e,pos}); if (hits.length >= 12) break; }
+      }
+      res.hidden = false;
+      res.innerHTML = hits.length ? hits.map(({e,pos})=>{
+        const from = Math.max(0, pos-40), bis = Math.min(e.text.length, pos+ql.length+70);
+        const snippet = (from>0?"…":"") + esc(e.text.slice(from,pos)) +
+          "<mark>"+esc(e.text.slice(pos,pos+ql.length))+"</mark>" +
+          esc(e.text.slice(pos+ql.length,bis)) + (bis<e.text.length?"…":"");
+        const href = "#"+e.page+(e.anchorId?"/"+e.anchorId:"");
+        return `<li><a href="${href}"><span class="where">${esc(e.where)}</span>${snippet}</a></li>`;
+      }).join("") : `<li class="search-empty">${T.no_hits} „${esc(q)}".</li>`;
+      res.querySelectorAll("a").forEach(a=>a.addEventListener("click", ()=>{
+        res.hidden = true; closeNav();
+      }));
+      live(hits.length + " Suchtreffer");
+    });
+  }
+
+  /* ── Block-Renderer (Stufen 1–4) ─────────────────────────── */
+  const renderer = {
+    text: b => `<div class="block">${b.html}</div>`,
+
+    note: b => {
+      const label = {key_point:T.label_key_point, info:T.note, warning:T.label_warning}[b.variant] || T.note;
+      return `<aside class="block note ${esc(b.variant||"info")}"><span class="h-label">${label}</span>${b.html}</aside>`;
+    },
+
+    table: b => `<div class="block"><table>${b.caption?`<caption>${esc(b.caption)}</caption>`:""}
+      <thead><tr>${b.header.map(k=>`<th scope="col">${esc(k)}</th>`).join("")}</tr></thead>
+      <tbody>${b.rows.map(z=>`<tr>${z.map(c=>`<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`,
+
+    accordion: b => `<div class="block">${b.items.map(e=>
+      `<details><summary>${esc(e.title)}</summary><div>${e.html}</div></details>`).join("")}</div>`,
+
+    code: b => `<div class="block"><pre><code>${esc(b.content)}</code></pre></div>`,
+
+    /* Formulas are translated at build time (src/unit/normalization.py):
+           simple notation as HTML with sub/sup, everything two-dimensional as
+           MathML. Here they are only inserted — no run-time library, so that the
+           unit stays single-file and offline. If `html` is missing, the LaTeX
+           stays visible, but the description carries the statement. */
+    formula: b => {
+      const content = b.html || `<code class="formula-raw">${esc(b.latex||"")}</code>`;
+      return b.display === "block"
+        ? `<figure class="block formula-block" role="img" aria-label="${esc(b.description)}">
+             <div class="formula-stage">${content}</div>
+             <figcaption>${esc(b.description)}</figcaption></figure>`
+        : `<div class="block"><p><span class="formula-inline" role="img"
+             aria-label="${esc(b.description)}">${content}</span></p></div>`;
+    },
+
+    quiz: (b, ctx) => {
+      const id = nid("qz");
+      const html = `<div class="block exercise" id="${id}">${b.questions.map((f,fi)=>{
+        const type = f.multiple ? "checkbox" : "radio";
+        return `<fieldset data-question="${fi}"><legend>${esc(f.question)}</legend>
+          ${f.options.map((o,oi)=>`
+            <div class="opt"><input type="${type}" name="${id}-f${fi}" id="${id}-f${fi}-o${oi}"
+                 value="${oi}" data-correct="${o.correct?1:0}">
+              <label for="${id}-f${fi}-o${oi}">${esc(o.text)}</label></div>
+            <div class="feedback" data-fb="${fi}-${oi}">${esc(o.feedback||"")}</div>`).join("")}
+        </fieldset>`;}).join("")}
+        <button type="button" class="btn" data-check>${T.check_answer}</button>
+        <p class="result" aria-live="polite"></p></div>`;
+      afterwards(()=>{
+        const root = document.getElementById(id);
+        $("[data-check]",root).addEventListener("click", ()=>{
+          let right_answer = 0;
+          b.questions.forEach((f,fi)=>{
+            const fs = root.querySelector(`fieldset[data-question="${fi}"]`);
+            let alleOk = true;
+            f.options.forEach((o,oi)=>{
+              const inp = fs.querySelector(`input[value="${oi}"]`);
+              const fb  = root.querySelector(`.feedback[data-fb="${fi}-${oi}"]`);
+              fb.classList.remove("show","correct","wrong");
+              if (inp.checked){
+                fb.classList.add("show", o.correct?"correct":"wrong");
+                if (!o.correct) alleOk = false;
+              } else if (o.correct){ alleOk = false; }
+            });
+            if (alleOk) right_answer++;
+          });
+          const res = $(".result",root);
+          res.textContent = fmt(T.quiz_result, {n: right_answer, total: b.questions.length}) + " " + (right_answer===b.questions.length ? T.well_done : T.read_feedback);
+          res.className = "result " + (right_answer===b.questions.length ? "ok":"partial");
+          live(res.textContent);
+          if (ctx && ctx.quizKey){ progress.quiz[ctx.quizKey] = right_answer===b.questions.length; save(progress); paintPath(ctx.pageId); }
+        });
+      });
+      return html;
+    },
+
+    cloze: b => {
+      const id = nid("lt");
+      let html = b.html.replace(/\{\{(\w+)\}\}/g, (m,k)=>{
+        const l = b.gaps[k] || {};
+        return `<input class="gap" data-gap="${esc(k)}" aria-label="${T.gap} ${esc(k)}${l.note? " – "+T.note+": "+esc(l.note):""}" autocomplete="off">`;
+      });
+      afterwards(()=>{
+        const root = document.getElementById(id);
+        /* Learning principle recall before resolution (as with the prediction):
+                   the solution can only be reached after at least ONE attempt of
+                   one's own — otherwise the exercise becomes copying. Revealed gaps
+                   appear DASHED (revealed, not solved) and do not count as correct. */
+        const btnSolution = $("[data-solution]",root);
+        $("[data-check]",root).addEventListener("click", ()=>{
+          let ok = 0, all = 0;
+          root.querySelectorAll("input.gap").forEach(inp=>{
+            all++;
+            const l = b.gaps[inp.dataset.gap] || {answers:[]};
+            const fits = (l.answers||[]).some(a=> a.trim().toLowerCase() === inp.value.trim().toLowerCase());
+            inp.classList.remove("revealed");
+            inp.classList.toggle("correct", fits); inp.classList.toggle("wrong", !fits);
+            inp.title = fits ? T.correct_title : (l.note ? T.note+": "+l.note : T.not_yet_correct);
+            if (fits) ok++;
+          });
+          const res = $(".result",root);
+          res.textContent = `${ok} ${T.from} ${all} ${T.gaps_correct}`;
+          res.className = "result " + (ok===all?"ok":"partial");
+          btnSolution.disabled = false; btnSolution.title = "";
+          live(res.textContent);
+        });
+        btnSolution.addEventListener("click", ()=>{
+          if (btnSolution.disabled) return;
+          root.querySelectorAll("input.gap").forEach(inp=>{
+            const l = b.gaps[inp.dataset.gap] || {answers:[]};
+            const answers = l.answers || [];
+            inp.value = answers[0] || "";
+            inp.classList.remove("correct","wrong");
+            inp.classList.add("revealed");
+            inp.title = answers.length > 1
+              ? T.also_correct + " " + answers.slice(1).join(", ") : "";
+          });
+          const res = $(".result",root);
+          res.textContent = T.solution_shown; res.className = "result";
+          live(T.solution_shown);
+        });
+      });
+      return `<div class="block exercise" id="${id}"><span class="u-title">${T.cloze}</span>
+        <div class="block">${html}</div>
+        <button type="button" class="btn" data-check>${T.check}</button>
+        <button type="button" class="btn" data-solution disabled title="${T.check_before_solution}">${T.show_solution}</button>
+        <p class="result" aria-live="polite"></p></div>`;
+    },
+
+    matching: b => {
+      const id = nid("zu");
+      /* Deduplicate: in a categorisation task (several statements, few target
+               terms) the same term would otherwise appear several times in the
+               select field. The check compares text values and stays correct. */
+      const right = [...new Set(b.pairs.map(p=>p.right))];
+      const shuffle = right.slice().sort(()=>Math.random()-0.5);
+      afterwards(()=>{
+        const root = document.getElementById(id);
+        $("[data-check]",root).addEventListener("click", ()=>{
+          let ok = 0;
+          root.querySelectorAll(".match-row").forEach((series,i)=>{
+            const fits = series.querySelector("select").value === b.pairs[i].right;
+            series.classList.toggle("correct",fits); series.classList.toggle("wrong",!fits);
+            if (fits) ok++;
+          });
+          const res = $(".result",root);
+          res.textContent = fmt(T.matching_result, {n: ok, total: b.pairs.length});
+          res.className = "result " + (ok===b.pairs.length?"ok":"partial");
+          live(res.textContent);
+        });
+      });
+      return `<div class="block exercise" id="${id}"><span class="u-title">${esc(b.task||"Ordne zu")}</span>
+        ${b.pairs.map((p,i)=>`<div class="match-row"><strong>${esc(p.left)}</strong>
+          <select aria-label="${T.matching_for} ${esc(p.left)}"><option value="">${T.select}</option>
+          ${shuffle.map(r=>`<option>${esc(r)}</option>`).join("")}</select></div>`).join("")}
+        <button type="button" class="btn" data-check style="margin-top:.7rem">${T.check}</button>
+        <p class="result" aria-live="polite"></p></div>`;
+    },
+
+    flashcards: b => {
+      const id = nid("fc");
+      afterwards(()=>{
+        const root = document.getElementById(id);
+        let ix = 0, front = true;
+        const card = $(".card3d",root), counter = $(".fc-counter",root);
+        function show(){
+          const k = b.cards[ix];
+          card.innerHTML = `<span><span class="page-label">${front?T.question:T.response}</span>${esc(front?k.front:k.back)}</span>`;
+          counter.textContent = (ix+1)+" / "+b.cards.length;
+        }
+        card.addEventListener("click", ()=>{ front=!front; show(); });
+        $("[data-next]",root).addEventListener("click", ()=>{ ix=(ix+1)%b.cards.length; front=true; show(); });
+        $("[data-back]",root).addEventListener("click", ()=>{ ix=(ix-1+b.cards.length)%b.cards.length; front=true; show(); });
+        show();
+      });
+      return `<div class="block" id="${id}">
+        <button type="button" class="card3d" aria-label="${T.flip_card}"></button>
+        <div class="fc-bar"><button type="button" class="btn secondary" data-back>${T.back}</button>
+        <button type="button" class="btn secondary" data-next>${T.next}</button>
+        <span class="fc-counter"></span></div></div>`;
+    },
+
+    chart: b => {
+      const id = nid("ch");
+      /* A chart with `params` is operable, not a picture. role="img" would hide
+               the sliders and select fields from screen readers — so set it only
+               for static graphics. */
+      const interactive = b.engine === "vegalite" && Array.isArray(b.spec?.params)
+                         && b.spec.params.length > 0;
+      afterwards(()=>{
+        const el = document.getElementById(id);
+        try{
+          if (b.engine === "vegalite" && typeof window.vegaEmbed === "function"){
+            /* Bind the width to the container unless the spec sets one: fixed pixel
+                           widths break on narrow screens. */
+            const spec = JSON.parse(JSON.stringify(b.spec));
+            if (spec.width === undefined && !spec.facet && !spec.concat
+                && !spec.hconcat && !spec.vconcat && !spec.repeat){
+              spec.width = "container";
+              spec.autosize = spec.autosize || {type:"fit", contains:"padding"};
+            }
+            window.vegaEmbed(el, spec, {actions:false, renderer:"svg"})
+              .catch(e => { el.innerHTML =
+                `<p class="sim-error">${T.graphic_error} ${esc(e.message)}</p>`; });
+          } else if (b.engine !== "vegalite" && hatChart()){
+            const c = document.createElement("canvas"); el.appendChild(c);
+            new Chart(c, JSON.parse(JSON.stringify(b.spec)));
+          } else {
+            el.innerHTML = `<p><em>${T.library_missing}</em> ${esc(b.description||"")}</p>`;
+          }
+        }catch(e){ el.innerHTML = `<p class="sim-error">${T.graphic_error} ${esc(e.message)}</p>`; }
+      });
+      return `<figure class="block${interactive ? " chart-interactive" : ""}">
+        <div class="chart-wrap" id="${id}" style="min-height:${(b.height||300)}px"
+        ${interactive ? `role="group" aria-label="${T.interactive_graphic} ${esc(b.description)}"`
+                     : `role="img" aria-label="${esc(b.description)}"`}></div>
+        <figcaption>${esc(b.description)}</figcaption></figure>`;
+    },
+
+    diagram: b => {
+      const id = nid("mm");
+      afterwards(async ()=>{
+        const el = document.getElementById(id);
+        try{
+          if (window.mermaid){
+            window.mermaid.initialize({startOnLoad:false, theme:"neutral"});
+            const {svg} = await window.mermaid.render(id+"-svg", b.code);
+            el.innerHTML = svg;
+          } else {
+            el.innerHTML = `<pre><code>${esc(b.code)}</code></pre>`;
+          }
+        }catch(e){ el.innerHTML = `<p class="sim-error">${T.diagram_error} ${esc(e.message)}</p><pre><code>${esc(b.code)}</code></pre>`; }
+      });
+      return `<figure class="block"><div class="mermaid-wrap" id="${id}" role="img" aria-label="${esc(b.description)}"></div>
+        <figcaption>${esc(b.description)}</figcaption></figure>`;
+    },
+
+    simulator: b => {
+      const id = nid("sm");
+      afterwards(()=>{
+        const root = document.getElementById(id);
+        const output = $(".sim-output",root);
+        const calculator = simCalculator(b.code, root);
+        let chart = null;
+        function readParams(){
+          const p = {};
+          root.querySelectorAll("input[type=range]").forEach(r=>{
+            p[r.dataset.name] = parseFloat(r.value);
+            $(`.sim-value[data-for="${r.dataset.name}"]`,root).textContent =
+              r.value + (r.dataset.unit ? " "+r.dataset.unit : "");
+          });
+          return p;
+        }
+        let job = 0;
+        async function run(){
+          const no = ++job;
+          const response = await calculator(readParams());
+          if (no !== job) return;          // a newer slider position is on its way
+          if (response.loadError){
+            output.innerHTML = `<p class="sim-error">${T.sim_code_error} ${esc(response.loadError === "no_function" ? T.no_function : response.loadError)}</p>`; return;
+          }
+          if (response.errors){
+            output.innerHTML = `<p class="sim-error">${T.sim_calc_error} ${esc(response.errors)}</p>`; return;
+          }
+          const res = simResult(response.res);
+          if (!res || !Array.isArray(res.x) || !Array.isArray(res.series)){
+            output.innerHTML = `<p class="sim-error">${T.invalid_output}</p>`; return;
+          }
+          const kind = (b.output && b.output.kind) || "line";
+          if (kind !== "table" && hatChart()){
+            if (!chart){
+              const c = document.createElement("canvas");
+              output.innerHTML = ""; output.appendChild(c);
+              chart = new Chart(c, { type: kind==="bar"?"bar":"line",
+                data:{labels:res.x, datasets: res.series.map(s=>({label:s.name, data:s.values, tension:.15, fill:false}))},
+                options:{animation:false, responsive:true,
+                  scales:{x:{title:{display:!!(b.output&&b.output.x_label), text:(b.output||{}).x_label}},
+                          y:{title:{display:!!(b.output&&b.output.y_label), text:(b.output||{}).y_label}}}}});
+            } else {
+              chart.data.labels = res.x;
+              res.series.forEach((s,i)=>{ chart.data.datasets[i].data = s.values; });
+              chart.update();
+            }
+          } else {
+            output.innerHTML = `<table><thead><tr><th scope="col">${esc((b.output||{}).x_label||"x")}</th>
+              ${res.series.map(s=>`<th scope="col">${esc(s.name)}</th>`).join("")}</tr></thead><tbody>
+              ${res.x.map((x,i)=>`<tr><td>${esc(x)}</td>${res.series.map(s=>`<td>${esc(s.values[i])}</td>`).join("")}</tr>`).join("")}
+              </tbody></table>`;
+          }
+        }
+        root.querySelectorAll("input[type=range]").forEach(r=> r.addEventListener("input", run));
+        run();
+      });
+      return `<div class="block sim" id="${id}">
+        <h4 style="margin-top:0">${esc(b.title||"Simulator")}</h4>
+        ${b.explanation ? `<div>${b.explanation}</div>` : ""}
+        ${b.parameters.map(p=>`<div class="sim-param">
+          <label for="${id}-${esc(p.name)}">${esc(p.label)}</label>
+          <input type="range" id="${id}-${esc(p.name)}" data-name="${esc(p.name)}" data-unit="${esc(p.unit||"")}"
+                 min="${p.min}" max="${p.max}" step="${p.step||1}" value="${p.value}">
+          <span class="sim-value" data-for="${esc(p.name)}"></span></div>`).join("")}
+        <div class="sim-output" style="margin-top:1rem" role="img" aria-label="${esc(b.description)}"></div>
+        <figcaption>${esc(b.description)}</figcaption></div>`;
+    },
+
+    prediction: b => {
+      const id = nid("vh");
+      afterwards(()=>{
+        const root = document.getElementById(id);
+        const button = $("[data-reveal]",root);
+        const ta = $("textarea",root);
+        const ready = ()=>{ button.disabled = !(root.querySelector("input:checked") || (ta && ta.value.trim())); };
+        root.querySelectorAll("input,textarea").forEach(e=>e.addEventListener("input",ready));
+        ready();
+        button.addEventListener("click", ()=>{
+          $(".solution",root).classList.add("show");
+          root.querySelectorAll(".opt input").forEach(inp=>{
+            const fb = root.querySelector(`.feedback[data-fb="${inp.value}"]`);
+            if (fb && inp.checked) fb.classList.add("show", inp.dataset.correct==="1"?"correct":"wrong");
+          });
+          button.disabled = true;
+          live(T.resolution_shown);
+        });
+      });
+      const options = Array.isArray(b.options) && b.options.length;
+      return `<div class="block task" id="${id}"><span class="a-label">${T.prediction}</span>
+        <div>${b.question}</div>
+        ${options ? b.options.map((o,oi)=>`
+          <div class="opt"><input type="radio" name="${id}" id="${id}-o${oi}" value="${oi}" data-correct="${o.correct?1:0}">
+            <label for="${id}-o${oi}">${esc(o.text)}</label></div>
+          <div class="feedback" data-fb="${oi}">${esc(o.feedback||"")}</div>`).join("")
+        : `<textarea aria-label="${T.your_prediction}" placeholder="${T.commit}"></textarea>`}
+        <p><button type="button" class="btn" data-reveal>${T.show_resolution}</button></p>
+        <div class="solution">${b.resolution}</div></div>`;
+    },
+
+    task: (b, ctx) => renderOpenTask(b, ctx, T.task, ""),
+    error_analysis: (b, ctx) => renderOpenTask(b, ctx, T.error_analysis,
+      `<div class="material"><pre><code>${esc(b.material||"")}</code></pre></div>`),
+
+    widget: b => `<figure class="block">
+        ${b.title?`<h4>${esc(b.title)}</h4>`:""}
+        <iframe class="widget" sandbox="allow-scripts" style="height:${b.height||400}px"
+          title="${esc(b.title||b.description)}" srcdoc="${esc(b.html)}"></iframe>
+        <figcaption>${esc(b.description)}</figcaption></figure>`
+  };
+
+  /* Simulator code comes from the language model and is not trusted. It runs
+     in a sandboxed iframe without allow-same-origin: that frame has an opaque
+     origin, so the code cannot read or change this page, its storage or its
+     cookies, even when the unit is served from an institution's web server.
+     Parameters go in and results come out as messages only. */
+  // Fills {name} placeholders of a text from the language table.
+  const fmt = (text, values) => String(text).replace(/\{(\w+)\}/g,
+    (m, k) => (k in values ? values[k] : m));
+
+  /* The model writes the simulator function and is told to return
+     {x, series:[{name, values}]}. A model that falls back to the German field
+     names of earlier format versions (serien, werte) still gets a working
+     simulator instead of an empty one. */
+  function simResult(res){
+    if (!res || typeof res !== "object") return res;
+    if (!Array.isArray(res.series) && Array.isArray(res.serien)) res.series = res.serien;
+    if (Array.isArray(res.series)) res.series.forEach(s => {
+      if (s && s.values === undefined && s.werte !== undefined) s.values = s.werte;
+    });
+    return res;
+  }
+
+  function simCalculator(code, container){
+    const f = document.createElement("iframe");
+    f.setAttribute("sandbox", "allow-scripts");
+    f.setAttribute("aria-hidden", "true");
+    f.tabIndex = -1;
+    f.style.display = "none";
+    // JSON.stringify quotes the code; "<" is escaped so that the code cannot
+    // close the script element it is embedded in.
+    const source = JSON.stringify(String(code)).replace(/</g, "\\u003c");
+    f.srcdoc = '<!doctype html><meta charset="utf-8"><script>' +
+      'var model=null,loadError=null;' +
+      'try{model=(new Function("return ("+' + source + '+")"))();' +
+      'if(typeof model!=="function"){loadError="no_function";}}' +
+      'catch(e){loadError=String(e&&e.message);}' +
+      'addEventListener("message",function(ev){var d=ev.data||{},a;' +
+      'if(loadError){a={no:d.no,loadError:loadError};}' +
+      'else{try{a={no:d.no,res:model(d.params)};}catch(e){a={no:d.no,errors:String(e&&e.message)};}}' +
+      'try{parent.postMessage(a,"*");}' +
+      'catch(e){parent.postMessage({no:d.no,res:JSON.parse(JSON.stringify(a.res))},"*");}});' +
+      'parent.postMessage({ready:true},"*");<\/script>';
+    let ready = false, counter = 0;
+    const pending = [], open = new Map();
+    window.addEventListener("message", ev => {
+      if (ev.source !== f.contentWindow) return;   // only our own frame
+      const d = ev.data || {};
+      if (d.ready){ ready = true; pending.splice(0).forEach(m => f.contentWindow.postMessage(m, "*")); return; }
+      const done = open.get(d.no);
+      if (done){ open.delete(d.no); done(d); }
+    });
+    container.appendChild(f);
+    return params => new Promise(done => {
+      const m = { no: ++counter, params };
+      open.set(m.no, done);
+      if (ready) f.contentWindow.postMessage(m, "*"); else pending.push(m);
+    });
+  }
+
+  function renderOpenTask(b, ctx, label, materialHtml){
+    const id = nid("of");
+    const merkKey = ctx && ctx.pageId != null ? ctx.pageId + ":" + ctx.blockIx : "x:" + id;
+    afterwards(()=>{
+      const root = document.getElementById(id);
+      const ta = $("textarea",root);
+      ta.value = progress.answers[merkKey] || "";
+      ta.addEventListener("input", ()=>{ progress.answers[merkKey] = ta.value; save(progress); });
+      $("[data-reveal]",root).addEventListener("click", (e)=>{
+        $(".solution",root).classList.add("show");
+        e.target.disabled = true;
+        live(T.sample_solution_shown);
+      });
+    });
+    return `<div class="block task" id="${id}"><span class="a-label">${esc(label)}</span>
+      ${b.title?`<h4 style="margin:.2rem 0 .6rem">${esc(b.title)}</h4>`:""}
+      ${materialHtml}
+      <div>${b.question || b.task || ""}</div>
+      ${(b.hints||[]).map((h,hi)=>`<details><summary>${fmt(T.hint_n, {n: hi+1})}</summary><div>${h}</div></details>`).join("")}
+      <p style="margin-bottom:.4rem"><label for="${id}-ta"><strong>${T.your_solution}</strong> ${T.stored_note}:</label></p>
+      <textarea id="${id}-ta"></textarea>
+      <p><button type="button" class="btn" data-reveal>${T.show_sample_solution}</button></p>
+      <div class="solution"><strong>${T.sample_solution}</strong> ${b.sample_solution}</div></div>`;
+  }
+
+  /* Nach-Render-Hooks (Event-Wiring nach innerHTML) */
+  let hooks = [];
+  function afterwards(fn){ hooks.push(fn); }
+  function runHooks(){ const h = hooks; hooks = []; h.forEach(fn=>{ try{fn();}catch(e){console.error(e);} }); }
+
+  /* Headings get anchor IDs (for search and deep links #lesson/anchor) */
+  function anchor(root){
+    const assignedPairs = new Set();
+    root.querySelectorAll("h3, h4, dt").forEach(el=>{
+      if (el.id) { assignedPairs.add(el.id); return; }
+      let basis = (el.tagName==="DT" ? "g-" : "") + slug(el.textContent), id = basis, n = 2;
+      while (assignedPairs.has(id) || document.getElementById(id)) id = basis + "-" + (n++);
+      el.id = id; assignedPairs.add(id);
+    });
+  }
+
+  /* ── Seiten ──────────────────────────────────────────────── */
+  function paintStart(){
+    return `<p class="eyebrow">${T.learning_unit}</p><h2>${esc(UNIT.title)}</h2>
+      <p class="lede">${esc(UNIT.description||"")}</p>
+      <div class="startmeta">
+        ${UNIT.duration_minutes?`<div><b>${T.duration}</b>ca. ${UNIT.duration_minutes} Min.</div>`:""}
+        ${Array.isArray(UNIT.modules)&&UNIT.modules.length?`<div><b>${T.modules}</b>${UNIT.modules.length}</div>`:""}
+        <div><b>${T.lessons}</b>${UNIT.lessons.length}</div>
+      </div>
+      ${UNIT.learning_objectives&&UNIT.learning_objectives.length?`<h3>${T.can_afterwards}</h3><ul>${UNIT.learning_objectives.map(z=>`<li>${esc(z)}</li>`).join("")}</ul>`:""}
+      ${UNIT.prerequisites&&UNIT.prerequisites.length?`<h3>${T.prerequisite_label}</h3><ul>${UNIT.prerequisites.map(z=>`<li>${esc(z)}</li>`).join("")}</ul>`:""}
+      <p style="margin-top:2rem"><a class="btn" style="text-decoration:none" href="#${UNIT.lessons[0].id}">${T.get_started}</a></p>
+      <footer class="provenance">__PROVENANCE__</footer>`;
+  }
+
+  /* A single incomplete block must not make the whole lesson unusable:
+       with a truncated model answer required fields can be missing, a renderer
+       throws, and without this the page could not be opened at all. */
+  function paintSafely(auf, b){
+    const r = renderer[b && b.type];
+    if (!r) return `<div class="block"><p class="sim-error">${T.unknown_type} ${esc(b && b.type)}</p></div>`;
+    try { return auf(r); }
+    catch (e) {
+      return `<div class="block"><p class="sim-error">${T.component_error}
+        (${esc(b.type)})${
+        b.description ? " " + esc(b.description) : ""}</p></div>`;
+    }
+  }
+
+  function paintLesson(page){
+    const l = page.lesson, ix = pages.indexOf(page);
+    const module = moduleOf(l.id);
+    const lessonPages = pages.filter(s=>s.kind==="lesson");
+    const blocks = (l.blocks||[]).map((b,bi)=>{
+      return paintSafely(r_ => r_(b, {pageId:page.id, blockIx: bi,
+        quizKey: b.type==="quiz" ? l.id+":"+bi : null}), b);
+    }).join("");
+    return `<p class="eyebrow">${module?esc(module.title)+" · ":""}${fmt(T.lesson_n_of, {n: lessonPages.indexOf(page)+1, total: UNIT.lessons.length})}</p>
+      <h2>${esc(l.title)}</h2>
+      ${l.learning_objectives&&l.learning_objectives.length?`<aside class="note info"><span class="h-label">${T.lesson_objectives}</span><ul style="margin:.2rem 0">${l.learning_objectives.map(z=>`<li>${esc(z)}</li>`).join("")}</ul></aside>`:""}
+      ${blocks}
+      <div class="page-nav">
+        <a class="btn secondary" style="text-decoration:none" href="#${pages[ix-1].id}">‹ ${esc(pages[ix-1].title)}</a>
+        ${pages[ix+1]?`<a class="btn" style="text-decoration:none" href="#${pages[ix+1].id}">${esc(pages[ix+1].title)} ›</a>`:""}
+      </div>`;
+  }
+
+  function paintTest(page){
+    const t = UNIT.final_test;
+    return `<p class="eyebrow">${T.final}</p><h2>${esc(t.title||T.final_test)}</h2>
+      ${renderer.quiz({questions:t.questions}, {pageId:page.id, quizKey:"test"})}
+      <div class="page-nav"><a class="btn secondary" style="text-decoration:none" href="#start">${T.to_overview}</a>
+      ${hasGlossary?`<a class="btn" style="text-decoration:none" href="#glossary">${T.glossary_arrow}</a>`:"<span></span>"}</div>`;
+  }
+
+  function paintGlossary(){
+    const entries = UNIT.glossary.slice().sort((a,b)=>a.term.localeCompare(b.term,"de"));
+    afterwards(()=>{
+      const filter = $("#gFilter"), dl = $("dl.glossary");
+      filter.addEventListener("input", ()=>{
+        const q = filter.value.trim().toLowerCase();
+        const dts = dl.querySelectorAll("dt");
+        dts.forEach(dt=>{
+          const dd = dt.nextElementSibling;
+          const fits = !q || (dt.textContent+" "+dd.textContent).toLowerCase().includes(q);
+          dt.style.display = fits ? "" : "none";
+          dd.style.display = fits ? "" : "none";
+        });
+      });
+    });
+    return `<p class="eyebrow">${T.look_up}</p><h2>${T.glossary}</h2>
+      <p><input class="glossary-filter" id="gFilter" type="search" placeholder="${T.glossary_placeholder}" aria-label="${T.glossary_filter}"></p>
+      <dl class="glossary">${entries.map(g=>{
+        const les = g.lesson ? pages.find(s=>s.id===g.lesson) : null;
+        return `<dt id="g-${slug(g.term)}">${esc(g.term)}</dt>
+          <dd>${g.definition || g.short || ""}${les?` <a class="glossary-link" href="#${les.id}">→ ${esc(les.title)}</a>`:""}</dd>`;
+      }).join("")}</dl>
+      <div class="page-nav"><a class="btn secondary" style="text-decoration:none" href="#start">${T.to_overview}</a><span></span></div>`;
+  }
+
+  function paintExercises(page){
+    const ix = pages.indexOf(page);
+    const blocks = (page.module.exercises||[]).map((b,bi)=>{
+      return paintSafely(r_ => r_(b, {pageId:page.id, blockIx:bi,
+        quizKey: b.type==="quiz" ? page.id+":"+bi : null}), b);
+    }).join("");
+    return `<p class="eyebrow">${T.apply}</p><h2>${esc(page.title)}</h2>
+      <p class="lede">${T.exercises_lede}</p>
+      ${blocks}
+      <div class="page-nav">
+        <a class="btn secondary" style="text-decoration:none" href="#${pages[ix-1].id}">‹ ${esc(pages[ix-1].title)}</a>
+        ${pages[ix+1]?`<a class="btn" style="text-decoration:none" href="#${pages[ix+1].id}">${esc(pages[ix+1].title)} ›</a>`:""}
+      </div>`;
+  }
+
+  /* ── Router ──────────────────────────────────────────────── */
+  function render(){
+    const {page, anchorId} = targetFromHash();
+    progress.visited[page.id] = true; save(progress);
+    hooks = [];
+    const main = $("#content");
+    main.innerHTML =
+      page.kind==="start"   ? paintStart()
+      : page.kind==="test"    ? paintTest(page)
+      : page.kind==="exercises" ? paintExercises(page)
+      : page.kind==="glossary" ? paintGlossary()
+      : paintLesson(page);
+    runHooks();
+    anchor(main);
+    paintPath(page.id);
+    document.title = (page.kind==="start" ? "" : page.title + " – ") + UNIT.title;
+    main.focus({preventScroll:true});
+    if (anchorId){
+      const target = document.getElementById(anchorId);
+      if (target){
+        target.scrollIntoView();
+        target.classList.add("anchor-target");
+        setTimeout(()=>target.classList.remove("anchor-target"), 1800);
+      } else window.scrollTo(0,0);
+    } else window.scrollTo(0,0);
+  }
+  window.addEventListener("hashchange", render);
+
+  /* Mobile Navigation */
+  const toggle = $("#navToggle");
+  // Static markup is filled from the language table like everything else.
+  toggle.textContent = "☰ " + T.contents;
+  $("#path").setAttribute("aria-label", T.learning_path);
+  function closeNav(){ $("#path").classList.remove("open"); toggle.setAttribute("aria-expanded","false"); }
+  toggle.addEventListener("click", ()=>{
+    const open = $("#path").classList.toggle("open");
+    toggle.setAttribute("aria-expanded", String(open));
+  });
+
+  initPathHeader();
+  render();
+})();
+</script>
+</body>
+</html>

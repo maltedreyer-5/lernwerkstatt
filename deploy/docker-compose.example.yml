@@ -1,0 +1,38 @@
+# Example: run LernWerkstatt with Docker Compose.
+#
+#   cp .env.example .env        # fill in the LLM endpoint(s)
+#   docker compose -f deploy/docker-compose.example.yml up -d --build
+#
+# The port is published on the loopback interface only. The interface has
+# no user accounts; put a reverse proxy with access control in front of it
+# (see nginx-location.example.conf and docs/installation.md).
+# Fixed project name: otherwise Compose names the project after the directory
+# of this file ("deploy"), and the volume would be "deploy_lernwerkstatt-data".
+name: lernwerkstatt
+
+services:
+  lernwerkstatt:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: lernwerkstatt
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:7860:7860"
+    environment:
+      # Path prefix under which the reverse proxy serves the application.
+      # Remove the line to serve it at the root.
+      - APP_ROOT_PATH=/lernwerkstatt
+    env_file:
+      - ../.env
+    volumes:
+      # Job register and job folders. They must survive rebuilds: resuming a
+      # job with its pickup code depends on them. A named volume is writable
+      # for the container user out of the box. To use a host directory
+      # instead, make it writable for UID 10001 first:
+      #   mkdir -p ./work && sudo chown 10001 ./work
+      # and replace the line with:  - ./work:/app/work
+      - lernwerkstatt-data:/app/work
+
+volumes:
+  lernwerkstatt-data:

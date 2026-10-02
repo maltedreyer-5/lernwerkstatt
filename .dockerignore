@@ -1,0 +1,17 @@
+# Never part of the image: credentials, runtime state, local build output.
+.env
+.env.*
+!.env.example
+work/
+tests/_tmp*
+node_modules/
+assets/vendor/
+.git/
+.github/
+.venv/
+venv/
+.idea/
+.vscode/
+__pycache__/
+*.pyc
+RELEASE-CHECKLIST.md

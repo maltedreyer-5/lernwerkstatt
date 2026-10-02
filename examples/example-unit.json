@@ -1,0 +1,318 @@
+{
+  "format_version": 1,
+  "id": "zinseszins-verstehen",
+  "title": "Zinseszins verstehen",
+  "description": "Warum Kapital exponentiell wächst — und warum unsere Intuition das systematisch unterschätzt. Beispiel-Einheit der LernWerkstatt.",
+  "language": "de",
+  "duration_minutes": 20,
+  "learning_objectives": [
+    "Kann den Unterschied zwischen linearem und exponentiellem Wachstum an einem Beispiel erklären",
+    "Kann die Wirkung von Zinssatz und Laufzeit auf das Endkapital qualitativ vorhersagen",
+    "Kann die 72er-Regel anwenden, um Verdopplungszeiten zu überschlagen"
+  ],
+  "prerequisites": [
+    "Grundrechenarten und Prozentrechnung"
+  ],
+  "provenance": {
+    "models": "Beispieldatei (handgeschrieben)",
+    "sources": [
+      "Modellwissen"
+    ],
+    "note": "Demonstriert die Blocktypen der Stufen 1–3."
+  },
+  "lessons": [
+    {
+      "id": "l1",
+      "title": "Linear oder exponentiell?",
+      "learning_objectives": [
+        "Kann linear von exponentiell abgrenzen",
+        "Erkennt den typischen Intuitionsfehler bei exponentiellem Wachstum"
+      ],
+      "blocks": [
+        {
+          "type": "text",
+          "html": "<p>Stellen Sie sich zwei Sparkonten vor. Konto A schreibt Ihnen jedes Jahr <strong>fix 50&nbsp;€</strong> gut. Konto B schreibt Ihnen jedes Jahr <strong>5&nbsp;% des aktuellen Kontostands</strong> gut. Beide starten mit 1.000&nbsp;€. Welches Konto liegt nach 30 Jahren vorn — und wie deutlich?</p><p>Konto A wächst <em>linear</em>: jedes Jahr derselbe Betrag. Konto B wächst <em>exponentiell</em>: der Zuwachs selbst wächst mit, weil die Zinsen des Vorjahres im Folgejahr mitverzinst werden. Genau das meint <strong>Zinseszins</strong>.</p>"
+        },
+        {
+          "type": "note",
+          "variant": "key_point",
+          "html": "<p>Beim Zinseszins verzinst sich auch der Zins. Der Zuwachs ist kein fester Betrag, sondern ein fester <em>Anteil</em> — und der bezieht sich jedes Jahr auf eine größere Basis.</p>"
+        },
+        {
+          "type": "chart",
+          "engine": "chartjs",
+          "height": 320,
+          "description": "Liniendiagramm über 30 Jahre: Konto A (linear, +50 € pro Jahr) erreicht 2.500 €; Konto B (5 % Zinseszins) erreicht rund 4.320 € — die Kurven trennen sich ab etwa Jahr 10 sichtbar.",
+          "spec": {
+            "type": "line",
+            "data": {
+              "labels": [
+                0,
+                5,
+                10,
+                15,
+                20,
+                25,
+                30
+              ],
+              "datasets": [
+                {
+                  "label": "Konto A: +50 € fix",
+                  "data": [
+                    1000,
+                    1250,
+                    1500,
+                    1750,
+                    2000,
+                    2250,
+                    2500
+                  ],
+                  "tension": 0.15
+                },
+                {
+                  "label": "Konto B: +5 % p.a.",
+                  "data": [
+                    1000,
+                    1276,
+                    1629,
+                    2079,
+                    2653,
+                    3386,
+                    4322
+                  ],
+                  "tension": 0.15
+                }
+              ]
+            },
+            "options": {
+              "scales": {
+                "y": {
+                  "title": {
+                    "display": true,
+                    "text": "Kontostand (€)"
+                  }
+                },
+                "x": {
+                  "title": {
+                    "display": true,
+                    "text": "Jahr"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "text",
+          "html": "<p>Die ersten Jahre wirken beide Konten fast gleich — das ist der Kern des Intuitionsfehlers. Exponentielles Wachstum sieht am Anfang harmlos aus und wird dann von der eigenen Basis davongetragen. Man könnte meinen, 5&nbsp;% seien „ungefähr wie 50&nbsp;€ pro Jahr\"; tatsächlich gilt das nur im allerersten Jahr.</p>"
+        },
+        {
+          "type": "quiz",
+          "questions": [
+            {
+              "question": "Konto B (5 % Zinseszins, Start 1.000 €) hat nach 2 Jahren …",
+              "multiple": false,
+              "options": [
+                {
+                  "text": "genau 1.100 €",
+                  "correct": false,
+                  "feedback": "Das wäre linear gerechnet (2 × 50 €). Im zweiten Jahr werden aber 5 % von 1.050 € gutgeschrieben — der Zins verzinst sich mit."
+                },
+                {
+                  "text": "1.102,50 €",
+                  "correct": true,
+                  "feedback": "Richtig: 1.000 → 1.050 → 1.050 × 1,05 = 1.102,50 €. Die 2,50 € Unterschied sind der Zinseszins-Effekt — klein am Anfang, gewaltig auf lange Sicht."
+                },
+                {
+                  "text": "1.105 €",
+                  "correct": false,
+                  "feedback": "Hier wurden 5 % + 5,5 % gemischt. Der Rechenweg ist Multiplikation mit 1,05 pro Jahr, nicht Addition wachsender Prozentsätze."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "l2",
+      "title": "Zinssatz und Zeit im Zusammenspiel",
+      "learning_objectives": [
+        "Kann die Wirkung von Zinssatz und Laufzeit am Simulator vorhersagen und prüfen",
+        "Kann die 72er-Regel zur Abschätzung der Verdopplungszeit anwenden"
+      ],
+      "blocks": [
+        {
+          "type": "text",
+          "html": "<h3>Selbst ausprobieren</h3><p>Wie in Lektion 1 gesehen, entscheidet die <em>Basis</em> über den Zuwachs. Jetzt drehen Sie selbst an den Stellschrauben. Konkrete Erkundungsaufgabe: Stellen Sie die Laufzeit auf 30 Jahre und verdoppeln Sie den Zinssatz von 3&nbsp;% auf 6&nbsp;%. Verdoppelt sich das Endkapital — oder passiert mehr?</p>"
+        },
+        {
+          "type": "simulator",
+          "title": "Zinseszins-Rechner",
+          "description": "Liniendiagramm des Kapitalverlaufs über die gewählte Laufzeit; Regler für Startkapital, Zinssatz und Laufzeit machen erfahrbar, dass der Zinssatz überproportional wirkt.",
+          "explanation": "<p>Beobachten Sie besonders die letzten Jahre der Kurve — dort entsteht der Großteil des Zuwachses.</p>",
+          "parameters": [
+            {
+              "name": "kapital",
+              "label": "Startkapital",
+              "min": 100,
+              "max": 10000,
+              "step": 100,
+              "value": 1000,
+              "unit": "€"
+            },
+            {
+              "name": "zins",
+              "label": "Zinssatz",
+              "min": 0,
+              "max": 15,
+              "step": 0.5,
+              "value": 3,
+              "unit": "%"
+            },
+            {
+              "name": "jahre",
+              "label": "Laufzeit",
+              "min": 1,
+              "max": 50,
+              "step": 1,
+              "value": 30,
+              "unit": "Jahre"
+            }
+          ],
+          "code": "function modell(p){ const x=[]; const w=[]; let k=p.kapital; for(let j=0;j<=p.jahre;j++){ x.push(j); w.push(Math.round(k)); k*=1+p.zins/100; } return { x, series:[{ name:'Kapital (€)', values:w }] }; }",
+          "output": {
+            "kind": "line",
+            "x_label": "Jahr",
+            "y_label": "Kapital (€)"
+          }
+        },
+        {
+          "type": "text",
+          "html": "<h3>Die 72er-Regel</h3><p>Für schnelle Überschläge gibt es eine Faustregel: Teilen Sie 72 durch den Zinssatz in Prozent, und Sie erhalten ungefähr die Zahl der Jahre bis zur <strong>Verdopplung</strong>. Bei 6&nbsp;% sind das 72&nbsp;/&nbsp;6&nbsp;=&nbsp;12 Jahre; bei 3&nbsp;% etwa 24 Jahre.</p>"
+        },
+        {
+          "type": "cloze",
+          "html": "<p>Bei einem Zinssatz von 8 % verdoppelt sich das Kapital nach der 72er-Regel in etwa {{1}} Jahren. Nach zwei Verdopplungen ist aus 1.000 € ein Betrag von {{2}} € geworden.</p>",
+          "gaps": {
+            "1": {
+              "answers": [
+                "9"
+              ],
+              "note": "72 geteilt durch den Zinssatz"
+            },
+            "2": {
+              "answers": [
+                "4000",
+                "4.000"
+              ],
+              "note": "verdoppeln, dann noch einmal verdoppeln"
+            }
+          }
+        },
+        {
+          "type": "flashcards",
+          "cards": [
+            {
+              "front": "Zinseszins",
+              "back": "Zinsen werden dem Kapital zugeschlagen und in den Folgeperioden mitverzinst."
+            },
+            {
+              "front": "Lineares Wachstum",
+              "back": "Konstanter Zuwachs pro Periode — fester Betrag, unabhängig vom Bestand."
+            },
+            {
+              "front": "Exponentielles Wachstum",
+              "back": "Zuwachs proportional zum Bestand — fester Prozentsatz statt fester Betrag."
+            },
+            {
+              "front": "72er-Regel",
+              "back": "Verdopplungszeit ≈ 72 ÷ Zinssatz in Prozent. Faustregel für Überschläge."
+            }
+          ]
+        },
+        {
+          "type": "accordion",
+          "items": [
+            {
+              "title": "Vertiefung: Warum ausgerechnet 72?",
+              "html": "<p>Die exakte Verdopplungszeit ist ln(2)/ln(1+z) ≈ 69,3/z für kleine z. 72 wird verwendet, weil es sich durch 2, 3, 4, 6, 8, 9 und 12 glatt teilen lässt — die Regel ist auf Kopfrechnen optimiert, nicht auf Präzision.</p>"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "final_test": {
+    "title": "Abschlusstest",
+    "questions": [
+      {
+        "question": "Welche Aussagen über Zinseszins treffen zu? (mehrere möglich)",
+        "multiple": true,
+        "options": [
+          {
+            "text": "Der jährliche Zuwachs in Euro bleibt über die Jahre konstant.",
+            "correct": false,
+            "feedback": "Das beschreibt lineares Wachstum. Beim Zinseszins wächst der Euro-Zuwachs, weil die Basis wächst."
+          },
+          {
+            "text": "Der Großteil des Endkapitals entsteht in den späten Jahren der Laufzeit.",
+            "correct": true,
+            "feedback": "Richtig — exponentielle Kurven sind vorne flach und hinten steil; deshalb lohnt langes Durchhalten überproportional."
+          },
+          {
+            "text": "Eine Verdopplung des Zinssatzes verdoppelt bei langer Laufzeit ungefähr das Endkapital.",
+            "correct": false,
+            "feedback": "Der Zinssatz steht im Exponenten der Basis — seine Verdopplung wirkt bei langer Laufzeit weit mehr als eine Verdopplung des Ergebnisses. Genau das zeigt der Simulator in Lektion 2."
+          },
+          {
+            "text": "Mit der 72er-Regel lässt sich die Verdopplungszeit überschlagen.",
+            "correct": true,
+            "feedback": "Richtig: Verdopplungszeit ≈ 72 ÷ Zinssatz in Prozent."
+          }
+        ]
+      }
+    ]
+  },
+  "glossary": [
+    {
+      "term": "Zinseszins",
+      "definition": "Zinsen werden dem Kapital zugeschlagen und in den Folgeperioden mitverzinst — der Zins verzinst sich selbst.",
+      "lesson": "l1",
+      "short": "Zinsen werden dem Kapital zugeschlagen und in den Folgeperioden mitverzinst — der Zins verzinst sich selbst."
+    },
+    {
+      "term": "Lineares Wachstum",
+      "definition": "Konstanter Zuwachs pro Periode: ein fester Betrag, unabhängig vom aktuellen Bestand.",
+      "lesson": "l1",
+      "short": "Konstanter Zuwachs pro Periode: ein fester Betrag, unabhängig vom aktuellen Bestand."
+    },
+    {
+      "term": "Exponentielles Wachstum",
+      "definition": "Zuwachs proportional zum Bestand: ein fester <em>Prozentsatz</em> statt eines festen Betrags.",
+      "lesson": "l1",
+      "short": "Zuwachs proportional zum Bestand: ein fester  Prozentsatz  statt eines festen Betrags."
+    },
+    {
+      "term": "72er-Regel",
+      "definition": "Faustregel: Verdopplungszeit ≈ 72 ÷ Zinssatz in Prozent. Auf Kopfrechnen optimiert, nicht auf Präzision.",
+      "lesson": "l2",
+      "short": "Faustregel: Verdopplungszeit ≈ 72 ÷ Zinssatz in Prozent."
+    },
+    {
+      "term": "Verdopplungszeit",
+      "definition": "Zeitraum, in dem sich eine exponentiell wachsende Größe verdoppelt; hängt nur vom Wachstumssatz ab, nicht vom Startwert.",
+      "lesson": "l2",
+      "short": "Zeitraum, in dem sich eine exponentiell wachsende Größe verdoppelt; hängt nur vom Wachstumssatz ab, nicht vom Startwert."
+    }
+  ],
+  "modules": [
+    {
+      "title": "Modul 1: Exponentielles Wachstum",
+      "lessons": [
+        "l1",
+        "l2"
+      ]
+    }
+  ]
+}

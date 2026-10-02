@@ -1,0 +1,27 @@
+# Credentials — never commit. .env.example is the template.
+.env
+.env.*
+!.env.example
+
+# Runtime state: job register, job folders (uploaded text, results)
+work/
+# Test scratch files and directories (tests/_tmp_*)
+tests/_tmp*
+
+# Build output: npm packages and the renderer files copied from them
+node_modules/
+assets/vendor/
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+
+# Editors
+.idea/
+.vscode/
+
+# Handover note for the maintainer; must not enter the history
+RELEASE-CHECKLIST.md

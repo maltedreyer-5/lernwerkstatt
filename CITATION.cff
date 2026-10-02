@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "LernWerkstatt"
+abstract: >-
+  LernWerkstatt generates interactive, self-contained HTML learning units with
+  a large language model. The scope of a unit is derived from the gap between
+  a learner's prior knowledge and goal; generated content is normalised,
+  validated and repaired deterministically before delivery.
+authors:
+  - family-names: "Dreyer"
+    given-names: "Malte"
+version: "1.0.0"
+license: MIT
+repository-code: "https://github.com/maltedreyer-5/lernwerkstatt"
+keywords:
+  - learning units
+  - instructional design
+  - large language models
+  - open educational resources

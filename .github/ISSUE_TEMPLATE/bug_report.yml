@@ -1,0 +1,49 @@
+name: Bug report
+description: Something does not work as documented.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        Please do not report security vulnerabilities here; see SECURITY.md.
+        Do not paste API keys, internal host names or learners' material.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: "1. …\n2. …"
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log lines
+      description: >-
+        The `[startup]` lines and the lines around the error. For problems
+        with a generated unit, the check report or the technical report helps.
+      render: text
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Shown in the first `[startup]` line.
+    validations:
+      required: true
+  - type: input
+    id: models
+    attributes:
+      label: Models and families
+      placeholder: "LLM1: …, family …; LLM2: …"
+  - type: dropdown
+    id: install
+    attributes:
+      label: Installation
+      options: [Docker Compose, Docker, local without Docker]
+    validations:
+      required: true

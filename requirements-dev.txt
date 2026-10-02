@@ -1,0 +1,8 @@
+# Additional tools for the checks in CONTRIBUTING.md. Not needed to run.
+-r requirements.txt
+pytest>=8,<10
+pyflakes>=3,<4
+jsonschema>=4,<5
+# Browser test of the generated units (tests/test_shell_browser.py).
+# Needs a browser in addition:  python -m playwright install chromium
+playwright>=1.40,<2
