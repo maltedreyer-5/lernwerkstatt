@@ -15,7 +15,7 @@
     "mermaid": "11.17.2",
     "vega": "5.33.1",
     "vega-embed": "6.29.0",
-    "vega-lite": "5.23.0"
+    "vega-lite": "6.4.3"
   },
   "devDependencies": {
     "eslint": "9.39.5",
