@@ -43,6 +43,9 @@ state is in the job folder; a job can be resumed after a restart.
 Run A of chapter *k+1* runs in parallel with run B of chapter *k*; run B
 stays sequential, so the reading order is guaranteed.
 
+The didactic reasoning of each phase, with its rules and checks, is described
+in [learning design](learning-design/README.md).
+
 ### Treatment classes
 
 The gap analysis gives every new concept one class, and the class decides

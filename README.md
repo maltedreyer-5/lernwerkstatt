@@ -91,6 +91,7 @@ network, put it behind a reverse proxy with access control.
 | [Configuration](docs/configuration.md) | every setting, models and reasoning, embedder and reranker |
 | [Operations](docs/operations.md) | security model, stored data, deleting jobs, maintenance |
 | [Architecture](docs/architecture.md) | pipeline, checks and repairs, modules |
+| [Learning design](docs/learning-design/README.md) | how a unit is planned, from gap analysis to critique |
 | [Unit format](docs/unit-format.md) | `unit.json` and the block types |
 | [Didactics criteria](docs/didactics-criteria.md) | the criteria and where each is enforced |
 | [Development](docs/development.md) | tests, prompts, adding languages |
